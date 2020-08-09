@@ -6,5 +6,5 @@ class Category {
   List<Product> products;
   List<Category> subCategories;
 
-  Category(this.id, this.name, this.products, this.subCategories);
+  Category(this.id, this.name, this.products, [this.subCategories]);
 }
