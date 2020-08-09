@@ -53,13 +53,16 @@ dependencies:
         path: package/inject
         ref: 7c3cbf6
 
-    # Source generator
-    source_gen: 0.9.6
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  mobx_codegen: ^1.1.0+1
+  build_runner: ^1.10.0
+  inject_generator:
+    git:
+      url: https://github.com/google/inject.dart.git
+      path: package/inject_generator
+      ref: 7c3cbf6
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
