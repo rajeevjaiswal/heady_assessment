@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:f_logs/model/flog/log.dart';
 import 'package:heady/data/network/apis/data/data_api.dart';
 
 class Repository {
@@ -13,10 +12,14 @@ class Repository {
   );
 
   // Post: ---------------------------------------------------------------------
-  Future<dynamic> getPosts() async {
+  Future<dynamic> getData() async {
     return await _dataApi.getData().then((data) {
-      Log(className: "Repository", text: data.toString());
-
+      /* Log(
+          className: "Repository",
+          text: data.toString(),
+          logLevel: LogLevel.ALL);
+      print("data $data");
+*/
       return data;
     }).catchError((error) => throw error);
   }
