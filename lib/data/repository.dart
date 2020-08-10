@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:heady/data/local/app_database.dart';
+import 'package:heady/data/local/database_helper.dart';
 import 'package:heady/data/local/entity/Category.dart';
 import 'package:heady/data/local/entity/product.dart';
 import 'package:heady/data/local/entity/variant.dart';
@@ -10,10 +10,10 @@ import 'package:heady/data/network/apis/data/data_api.dart';
 class Repository {
   // api objects
   final DataApi _dataApi;
-  final AppDatabase _database;
+  final DatabaseHelper _databaseHelper;
 
   // constructor
-  Repository(this._dataApi, this._database);
+  Repository(this._dataApi, this._databaseHelper);
 
   // Post: ---------------------------------------------------------------------
   Future<dynamic> getData() async {
@@ -37,8 +37,10 @@ class Repository {
     var rankingJson = response['rankings'] as List<dynamic>;
     _updateProductsRankingType(rankingJson, idForProductMap);
     _assignChildCategories(idForCategoryMap, categoryIdForChildCategoriesIdMap);
-    //todo : save all the above parsed data in db
-    print("main $categories");
+
+    /// save  parsed data in db
+    _saveProductsToDatabase(idForProductMap);
+    _saveCategoriesToDatabase(idForCategoryMap);
   }
 
   void _parseCategory(
@@ -93,11 +95,15 @@ class Repository {
     for (int i = 0; i < variantList.length; i++) {
       var variantJson = variantList[i];
 
-      Variant(variantJson['id'], variantJson['color'], variantJson['size'],
-          double.parse(variantJson['price'].toString()), productId);
+      var variant = Variant(
+          variantJson['id'],
+          variantJson['color'],
+          variantJson['size'],
+          double.parse(variantJson['price'].toString()),
+          productId);
 
       /// save this data in db
-      ///
+      _saveVariantToDatabase(variant);
     }
   }
 
@@ -144,8 +150,7 @@ class Repository {
       Map<int, dynamic> categoryIdForChildCategoriesIdMap) {
     for (int id in categoryIdForChildCategoriesIdMap.keys) {
       var category = idForCategoryMap[id];
-      var childIdsList =
-          categoryIdForChildCategoriesIdMap[id] as List<Category>;
+      var childIdsList = categoryIdForChildCategoriesIdMap[id] as List<dynamic>;
       for (int i = 0; i < childIdsList.length; i++) {
         var childCategory = idForCategoryMap[i];
         childCategory?.parentId = category?.id;
@@ -153,6 +158,24 @@ class Repository {
     }
   }
 
-  /// limitations in floor plugin. So need to maintain seperate table for vat
-  void _saveVatToDatabase(Vat vat) {}
+  /// limitations in floor plugin. So need to maintain separate table for vat
+  void _saveVatToDatabase(Vat vat) async {
+    await _databaseHelper.saveVatToDatabase(vat);
+  }
+
+  void _saveVariantToDatabase(Variant variant) async {
+    await _databaseHelper.saveVariantToDatabase(variant);
+  }
+
+  void _saveProductsToDatabase(Map<int, Product> idForProductMap) async {
+    for (int id in idForProductMap.keys) {
+      await _databaseHelper.saveProductToDatabase(idForProductMap[id]);
+    }
+  }
+
+  void _saveCategoriesToDatabase(Map<int, Category> idForCategoryMap) async {
+    for (int id in idForCategoryMap.keys) {
+      await _databaseHelper.saveCategoryToDatabase(idForCategoryMap[id]);
+    }
+  }
 }

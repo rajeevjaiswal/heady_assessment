@@ -3,6 +3,6 @@ import 'package:heady/data/local/entity/variant.dart';
 
 @dao
 abstract class VariantDao {
-  @insert
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertVariant(Variant variant);
 }

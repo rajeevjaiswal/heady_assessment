@@ -7,7 +7,8 @@ import 'package:heady/data/local/entity/Category.dart';
 import 'package:heady/data/local/entity/product.dart';
 import 'package:heady/data/local/entity/variant.dart';
 import 'package:heady/data/local/entity/vat.dart';
-
+import 'package:sqflite/sqflite.dart' as sqflite; // needed for floor db
+import 'dart:async'; // needed for floor db
 part 'app_database.g.dart'; // the generated code will be there
 
 @Database(version: 1, entities: [Category, Product, Variant, Vat])

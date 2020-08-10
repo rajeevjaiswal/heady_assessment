@@ -3,6 +3,6 @@ import 'package:heady/data/local/entity/product.dart';
 
 @dao
 abstract class ProductDao {
-  @insert
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertProduct(Product product);
 }

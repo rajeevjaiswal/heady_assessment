@@ -1,8 +1,9 @@
 import 'package:floor/floor.dart';
-import 'package:flutter/foundation.dart';
+
+import '../entity/Category.dart' as cat;
 
 @dao
 abstract class CategoryDao {
-  @insert
-  Future<void> insertCategory(Category category);
+  @Insert(onConflict: OnConflictStrategy.replace)
+  Future<void> insertCategory(cat.Category category);
 }
