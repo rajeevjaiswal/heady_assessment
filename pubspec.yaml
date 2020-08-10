@@ -53,6 +53,9 @@ dependencies:
         path: package/inject
         ref: 7c3cbf6
 
+    # Database just like room in android
+    floor: ^0.14.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,6 +66,7 @@ dev_dependencies:
       url: https://github.com/google/inject.dart.git
       path: package/inject_generator
       ref: 7c3cbf6
+  floor_generator: ^0.14.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
