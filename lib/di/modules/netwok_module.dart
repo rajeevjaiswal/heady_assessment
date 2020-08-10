@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:heady/data/local/app_database.dart';
 import 'package:heady/data/network/apis/data/data_api.dart';
 import 'package:heady/data/network/constants/endpoints.dart';
 import 'package:heady/data/network/dio_client.dart';
@@ -56,8 +57,6 @@ class NetworkModule {
   /// Calling it multiple times will return the same instance.
   @provide
   @singleton
-  Repository provideRepository(
-    DataApi postApi,
-  ) =>
-      Repository(postApi);
+  Repository provideRepository(DataApi postApi, AppDatabase database) =>
+      Repository(postApi, database);
 }

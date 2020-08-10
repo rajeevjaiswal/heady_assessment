@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:heady/constants/app_theme.dart';
 import 'package:heady/di/components/app_component.dart';
+import 'package:heady/di/modules/local_module.dart';
 import 'package:heady/di/modules/netwok_module.dart';
 import 'package:heady/stores/data_store.dart';
 import 'package:heady/ui/home/home_page.dart';
@@ -19,6 +20,7 @@ void main() {
   ]).then((_) async {
     appComponent = await AppComponent.create(
       NetworkModule(),
+      LocalModule(),
     );
     runApp(appComponent.app);
   });

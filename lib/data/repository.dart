@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:heady/data/local/app_database.dart';
 import 'package:heady/data/local/entity/Category.dart';
 import 'package:heady/data/local/entity/product.dart';
 import 'package:heady/data/local/entity/variant.dart';
@@ -9,11 +10,10 @@ import 'package:heady/data/network/apis/data/data_api.dart';
 class Repository {
   // api objects
   final DataApi _dataApi;
+  final AppDatabase _database;
 
   // constructor
-  Repository(
-    this._dataApi,
-  );
+  Repository(this._dataApi, this._database);
 
   // Post: ---------------------------------------------------------------------
   Future<dynamic> getData() async {
