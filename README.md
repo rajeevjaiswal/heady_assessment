@@ -1,16 +1,22 @@
-# heady
+# Heady
 
-Heady assessment
+Heady assessment. - [Apk Download Link](https://drive.google.com/file/d/1DW3ZuFz1u0l4xpw4V-XRZTJJ9ES8XZn1/view?usp=sharing)
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## How to run 
 
-A few resources to get you started if this is your first Flutter project:
+**Step 1:**
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Go to project root and execute the following command in console to get the required dependencies: 
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+flutter pub get 
+```
+
+**Step 2:**
+
+This project uses `inject` library that works with code generation, execute the following command to generate files:
+
+```
+flutter packages pub run build_runner build --delete-conflicting-outputs
+```
