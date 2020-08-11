@@ -4,6 +4,7 @@ import 'package:heady/data/local/entity/product.dart';
 import 'package:heady/data/local/entity/variant.dart';
 import 'package:heady/data/local/entity/vat.dart';
 import 'package:heady/models/category_with_children.dart';
+import 'package:heady/models/product_detail.dart';
 
 import 'entity/Category.dart';
 
@@ -130,6 +131,17 @@ class DatabaseHelper {
         }
       });*/
       return productList;
+    });
+  }
+
+  Future<ProductDetail> getProductDetailById(int parentId) async {
+    var productDetail = ProductDetail();
+    return _database.then((database) async {
+      var variants = await database.variantDao.getVariants(parentId);
+      var vat = await database.vatDao.getVat(parentId);
+      productDetail.variants = variants;
+      productDetail.vat = vat;
+      return productDetail;
     });
   }
 }

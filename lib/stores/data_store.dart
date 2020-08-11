@@ -1,6 +1,7 @@
 import 'package:heady/data/local/entity/product.dart';
 import 'package:heady/data/repository.dart';
 import 'package:heady/models/category_with_children.dart';
+import 'package:heady/models/product_detail.dart';
 import 'package:heady/stores/error_store.dart';
 import 'package:mobx/mobx.dart';
 
@@ -93,7 +94,6 @@ abstract class _DataStore with Store {
 
   @action
   Future getProductsByCategoryId(int catId, int sortId) async {
-    // just need to check the data from the server
     final future = _repository.getProductsByCategoryId(catId, sortId);
 
     /// track status of future.
@@ -104,5 +104,9 @@ abstract class _DataStore with Store {
     }).catchError((error) {
       errorStore.errorMessage = "Error while fetching data";
     });
+  }
+
+  Future<ProductDetail> getProductDetails(int productId) async {
+    return await _repository.getProductDetailById(productId);
   }
 }

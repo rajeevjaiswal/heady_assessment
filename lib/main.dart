@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
         title: 'Heady',
         theme: themeData,
         home: MyHomePage(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

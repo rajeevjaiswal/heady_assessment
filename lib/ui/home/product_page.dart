@@ -50,7 +50,7 @@ class _ProductPageState extends State<ProductPage> {
                 },
                 icon: Icon(Icons.pageview),
                 labelColor: Colors.green,
-                labelBackgroundColor: Colors.yellow),
+                labelBackgroundColor: Colors.white),
             HawkFabMenuItem(
                 label: 'Most Ordered',
                 ontap: () {
@@ -64,7 +64,7 @@ class _ProductPageState extends State<ProductPage> {
                 },
                 icon: Icon(Icons.shopping_cart),
                 labelColor: Colors.green,
-                labelBackgroundColor: Colors.yellow),
+                labelBackgroundColor: Colors.white),
             HawkFabMenuItem(
                 label: 'Most Shared',
                 ontap: () {
@@ -78,7 +78,7 @@ class _ProductPageState extends State<ProductPage> {
                 },
                 icon: Icon(Icons.share),
                 labelColor: Colors.green,
-                labelBackgroundColor: Colors.yellow),
+                labelBackgroundColor: Colors.white),
           ],
           body: _buildBody(),
         ),
@@ -150,5 +150,61 @@ class _ProductPageState extends State<ProductPage> {
     return text;
   }
 
-  void _handleTap(Product product) {}
+  void _handleTap(Product product) async {
+    var details = await _dataStore.getProductDetails(product.id);
+
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+              title: new Text(
+                "${product.name} details",
+                textAlign: TextAlign.center,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  if (details.variants != null) ...[
+                    Text(
+                      "Variants :",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Column(
+                      children: details.variants
+                          .map((variant) => Text(
+                              "Color : ${variant.color ?? "NA"} , Size : ${variant.size ?? "NA"} , Price : ${variant.price ?? "NA"}"))
+                          .toList(),
+                    )
+                  ],
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text("${details.vat.name} : ${details.vat.value}"),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text("Views : ${product.viewCount.toString()}"),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text("Orders : ${product.orderCount.toString()}"),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text("Shares : ${product.shareCount.toString()}"),
+                ],
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ));
+  }
 }

@@ -5,4 +5,7 @@ import 'package:heady/data/local/entity/variant.dart';
 abstract class VariantDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertVariant(Variant variant);
+
+  @Query('SELECT * FROM Variant WHERE productId = :productId')
+  Future<List<Variant>> getVariants(int productId);
 }

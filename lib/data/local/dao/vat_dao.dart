@@ -5,4 +5,7 @@ import 'package:heady/data/local/entity/vat.dart';
 abstract class VatDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertVat(Vat vat);
+
+  @Query('SELECT * FROM Vat WHERE productId = :productId')
+  Future<Vat> getVat(int productId);
 }

@@ -8,6 +8,7 @@ import 'package:heady/data/local/entity/variant.dart';
 import 'package:heady/data/local/entity/vat.dart';
 import 'package:heady/data/network/apis/data/data_api.dart';
 import 'package:heady/models/category_with_children.dart';
+import 'package:heady/models/product_detail.dart';
 
 class Repository {
   // api objects
@@ -53,6 +54,14 @@ class Repository {
     return products;
   }
 
+  Future<ProductDetail> getProductDetailById(int productId) async {
+    var products = await _databaseHelper
+        .getProductDetailById(productId)
+        .catchError((error) => throw error);
+
+    return products;
+  }
+
   Future<void> _parseResponse(dynamic response) async {
 //    final mainResponse = jsonDecode(response.toString()) as Map;
 
@@ -73,7 +82,6 @@ class Repository {
 
     await _saveProductsToDatabase(idForProductMap);
     await _saveCategoriesToDatabase(idForCategoryMap);
-    return null;
   }
 
   Future<void> _parseCategory(
@@ -98,7 +106,6 @@ class Repository {
     if (childCatList != null && childCatList.length > 0) {
       categoryIdForChildCategoriesIdMap[category.id] = childCatList;
     }
-    return null;
   }
 
   Future<void> _parseProductForCategory(
@@ -145,7 +152,6 @@ class Repository {
 
       /// save this data in db
       await _saveVariantToDatabase(variant);
-      return null;
     }
   }
 
