@@ -27,7 +27,8 @@ class DatabaseHelper {
   }
 
   Future<void> saveProductToDatabase(Product product) async {
-    print("insert product id => ${product.id}");
+    print(
+        "insert product id => ${product.id}  ===> catId  ${product.categoryId}");
     return _database.then((database) async {
       return await database.productDao.insertProduct(product);
     });
@@ -74,6 +75,49 @@ class DatabaseHelper {
         }
       });
       return categories;
+    });
+  }
+
+  Future<List<CategoryWithChildren>> getChildCategories(int parentId) async {
+    List<CategoryWithChildren> categories = List();
+    return _database.then((database) async {
+      await database.categoryDao
+          .getChildCategories(parentId)
+          .then((childCategories) async {
+        if (childCategories != null && childCategories.isNotEmpty) {
+          print("childCategories count ${childCategories.length}");
+          for (Category eachCategory in childCategories) {
+            CategoryWithChildren tempData = CategoryWithChildren();
+            tempData.category = eachCategory;
+            print("childCatCount ${eachCategory.subCategoryCount}");
+            print("productCount ${eachCategory.productCount}");
+            if (eachCategory.subCategoryCount > 0) {
+              var childCategories = await database.categoryDao
+                  .getChildCategories(eachCategory.id);
+              print("add child");
+
+              tempData.childCategories = childCategories;
+            }
+
+            categories.add(tempData);
+          }
+        }
+      });
+      return categories;
+    });
+  }
+
+  Future<List<Product>> getProductsByCategoryId(int catId) async {
+    List<Product> productList = List();
+    return _database.then((database) async {
+      await database.productDao.getProductsForCategory(catId).then((products) {
+        if (products != null && products.isNotEmpty) {
+          print("prodListCount ${products.length}");
+
+          productList = products;
+        }
+      });
+      return productList;
     });
   }
 }
