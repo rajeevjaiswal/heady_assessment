@@ -19,7 +19,7 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   DataStore _dataStore;
-
+  int _sortId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +44,9 @@ class _ProductPageState extends State<ProductPage> {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text('Sorting by most viewed')),
                   );
+                  _sortId = 0;
+                  _dataStore.getProductsByCategoryId(
+                      widget.categoryId, _sortId);
                 },
                 icon: Icon(Icons.pageview),
                 labelColor: Colors.green,
@@ -55,6 +58,9 @@ class _ProductPageState extends State<ProductPage> {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text('Sorting by most ordered')),
                   );
+                  _sortId = 1;
+                  _dataStore.getProductsByCategoryId(
+                      widget.categoryId, _sortId);
                 },
                 icon: Icon(Icons.shopping_cart),
                 labelColor: Colors.green,
@@ -66,6 +72,9 @@ class _ProductPageState extends State<ProductPage> {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text('Sorting by most shared')),
                   );
+                  _sortId = 2;
+                  _dataStore.getProductsByCategoryId(
+                      widget.categoryId, _sortId);
                 },
                 icon: Icon(Icons.share),
                 labelColor: Colors.green,
@@ -83,7 +92,7 @@ class _ProductPageState extends State<ProductPage> {
 
     _dataStore = Provider.of<DataStore>(context);
     if (!_dataStore.productLoading) {
-      _dataStore.getProductsByCategoryId(widget.categoryId);
+      _dataStore.getProductsByCategoryId(widget.categoryId, _sortId);
     }
   }
 
@@ -108,10 +117,37 @@ class _ProductPageState extends State<ProductPage> {
             child: Container(
               margin: const EdgeInsets.only(bottom: 16),
               height: 120,
-              child: CategoryWidget(name: productData.name),
+              child: Stack(children: [
+                CategoryWidget(
+                  name: productData.name,
+                  width: double.infinity,
+                ),
+                _sortId != null
+                    ? Container(
+                        padding: const EdgeInsets.all(4),
+                        color: Colors.red,
+                        child: Text(
+                          showTextLabel(productData),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
+                    : Container(),
+              ]),
             ),
           );
         });
+  }
+
+  String showTextLabel(Product productData) {
+    var text = '';
+    if (_sortId == 0) {
+      text = "Views : ${productData.viewCount.toString()}";
+    } else if (_sortId == 1) {
+      text = "Orders : ${productData.orderCount.toString()}";
+    } else if (_sortId == 2) {
+      text = "Shares : ${productData.shareCount.toString()}";
+    }
+    return text;
   }
 
   void _handleTap(Product product) {}

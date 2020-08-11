@@ -107,16 +107,28 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<Product>> getProductsByCategoryId(int catId) async {
+  Future<List<Product>> getProductsByCategoryId(int catId, int sortId) async {
     List<Product> productList = List();
     return _database.then((database) async {
-      await database.productDao.getProductsForCategory(catId).then((products) {
+      if (sortId == null) {
+        productList = await database.productDao.getProductsForCategory(catId);
+      } else if (sortId == 0) {
+        productList = await database.productDao.getProductsSortedByViews(catId);
+      } else if (sortId == 1) {
+        productList =
+            await database.productDao.getProductsSortedByOrders(catId);
+      } else {
+        productList =
+            await database.productDao.getProductsSortedByShares(catId);
+      }
+
+      /* await database.productDao.getProductsForCategory(catId).then((products) {
         if (products != null && products.isNotEmpty) {
           print("prodListCount ${products.length}");
 
           productList = products;
         }
-      });
+      });*/
       return productList;
     });
   }

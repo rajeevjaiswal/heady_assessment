@@ -3,7 +3,8 @@ import 'package:heady/constants/app_style.dart';
 
 class CategoryWidget extends StatelessWidget {
   final String name;
-  CategoryWidget({@required this.name});
+  final double width;
+  CategoryWidget({@required this.name, this.width = 140});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,7 @@ class CategoryWidget extends StatelessWidget {
         color: Colors.grey,
         borderRadius: BorderRadius.circular(8),
       ),
-      width: 140,
+      width: width,
       child: Center(
           child: Text(
         name,

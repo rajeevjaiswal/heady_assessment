@@ -8,4 +8,16 @@ abstract class ProductDao {
 
   @Query('SELECT * FROM Product WHERE categoryId = :categoryId')
   Future<List<Product>> getProductsForCategory(int categoryId);
+
+  @Query(
+      'SELECT * FROM Product WHERE categoryId = :categoryId ORDER BY viewCount DESC')
+  Future<List<Product>> getProductsSortedByViews(int categoryId);
+
+  @Query(
+      'SELECT * FROM Product WHERE categoryId = :categoryId ORDER BY orderCount DESC')
+  Future<List<Product>> getProductsSortedByOrders(int categoryId);
+
+  @Query(
+      'SELECT * FROM Product WHERE categoryId = :categoryId ORDER BY shareCount DESC')
+  Future<List<Product>> getProductsSortedByShares(int categoryId);
 }

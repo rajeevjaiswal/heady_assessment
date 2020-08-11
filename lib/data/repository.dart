@@ -45,9 +45,9 @@ class Repository {
     return topCategories;
   }
 
-  Future<List<Product>> getProductsByCategoryId(int catId) async {
+  Future<List<Product>> getProductsByCategoryId(int catId, int sortId) async {
     var products = await _databaseHelper
-        .getProductsByCategoryId(catId)
+        .getProductsByCategoryId(catId, sortId)
         .catchError((error) => throw error);
 
     return products;

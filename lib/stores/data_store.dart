@@ -92,9 +92,9 @@ abstract class _DataStore with Store {
   }
 
   @action
-  Future getProductsByCategoryId(int catId) async {
+  Future getProductsByCategoryId(int catId, int sortId) async {
     // just need to check the data from the server
-    final future = _repository.getProductsByCategoryId(catId);
+    final future = _repository.getProductsByCategoryId(catId, sortId);
 
     /// track status of future.
     productFuture = ObservableFuture(future);
