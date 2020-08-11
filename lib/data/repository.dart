@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:heady/data/local/constants/db_constants.dart';
 import 'package:heady/data/local/database_helper.dart';
 import 'package:heady/data/local/entity/Category.dart';
 import 'package:heady/data/local/entity/product.dart';
@@ -23,13 +22,9 @@ class Repository {
     var topCategories = await _databaseHelper.getTopCategories();
 
     if (topCategories.isEmpty) {
-      print("initial records empty");
-
       await _dataApi.getData().then((data) async {
         await _parseResponse(data);
         topCategories = await _databaseHelper.getTopCategories();
-
-        print("after saving count ${topCategories.length}");
 
         return data;
       }).catchError((error) => throw error);
@@ -63,14 +58,11 @@ class Repository {
   }
 
   Future<void> _parseResponse(dynamic response) async {
-//    final mainResponse = jsonDecode(response.toString()) as Map;
-
     final categories = response['categories'] as List<dynamic>;
     var idForProductMap = Map<int, Product>();
     var idForCategoryMap = Map<int, Category>();
     var categoryIdForChildCategoriesIdMap = Map<int, dynamic>();
     for (int i = 0; i < categories.length; i++) {
-      print("parsing cat");
       await _parseCategory(categories[i], idForProductMap, idForCategoryMap,
           categoryIdForChildCategoriesIdMap);
     }
@@ -112,12 +104,10 @@ class Repository {
       dynamic categoryJson, Map<int, Product> idForProductMap) async {
     var productList = categoryJson['products'] as List<dynamic>;
     var catId = categoryJson['id'];
-    print("is productlist null ${productList != null}  ${productList.length}");
     if (productList.length > 0) {
       for (int i = 0; i < productList?.length; i++) {
         var productJson = productList[i];
         var taxJson = productJson['tax'];
-        print("parse product id => ${productJson['id']}  catid  $catId");
 
         var product = Product(
           id: productJson['id'],
@@ -127,9 +117,7 @@ class Repository {
         );
         var vat = Vat(taxJson['name'],
             double.parse(taxJson['value'].toString()), productJson['id']);
-        print("vat db called");
         await _saveVatToDatabase(vat);
-        print("vat db end");
 
         idForProductMap[product.id] = product;
         await _parseVariantForEachProduct(productJson);
@@ -166,7 +154,6 @@ class Repository {
         var product = idForProductMap[viewJson['id']];
         product?.viewCount = viewJson['view_count'];
       }
-      print(rankingJson);
     }
 
     /// for updating order count
@@ -178,7 +165,6 @@ class Repository {
         var product = idForProductMap[viewJson['id']];
         product?.orderCount = viewJson['order_count'];
       }
-      print(rankingJson);
     }
 
     /// for updating share count
@@ -190,7 +176,7 @@ class Repository {
         var product = idForProductMap[viewJson['id']];
         product?.shareCount = viewJson['shares'];
       }
-      print(rankingJson);
+      //
     }
   }
 

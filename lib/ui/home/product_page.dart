@@ -26,7 +26,7 @@ class _ProductPageState extends State<ProductPage> {
       appBar: AppBar(
         title: Text(
           widget.title ?? "",
-          style: childTextStyle,
+          style: titleTextStyle,
         ),
       ),
       body: Builder(

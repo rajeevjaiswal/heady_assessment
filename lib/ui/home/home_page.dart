@@ -25,7 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(
           "Heady",
-          style: childTextStyle,
+          style: titleTextStyle,
         ),
       ),
       body: _buildBody(),

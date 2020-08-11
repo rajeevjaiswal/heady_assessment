@@ -11,3 +11,9 @@ TextStyle childTextStyle = TextStyle(
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
     fontSize: 18.0);
+
+TextStyle titleTextStyle = TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.w500,
+    fontStyle: FontStyle.normal,
+    fontSize: 18.0);

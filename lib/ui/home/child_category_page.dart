@@ -28,7 +28,7 @@ class _ChildCategoryPageState extends State<ChildCategoryPage> {
       appBar: AppBar(
         title: Text(
           widget.title ?? "",
-          style: childTextStyle,
+          style: titleTextStyle,
         ),
       ),
       body: _buildBody(),
@@ -86,8 +86,6 @@ class _ChildCategoryPageState extends State<ChildCategoryPage> {
       nextScreen(
           context, ChildCategoryPage(title: childData.name, id: childData.id));
     }
-
-    print("actual product count ${childData.productCount}");
 
     if (childData.productCount > 0) {
       nextScreen(context,
