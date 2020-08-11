@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:heady/data/local/constants/db_constants.dart';
 import 'package:heady/data/local/database_helper.dart';
 import 'package:heady/data/local/entity/Category.dart';
 import 'package:heady/data/local/entity/product.dart';
@@ -15,15 +16,27 @@ class Repository {
   // constructor
   Repository(this._dataApi, this._databaseHelper);
 
-  // Post: ---------------------------------------------------------------------
+  // Data: ---------------------------------------------------------------------
   Future<dynamic> getData() async {
-    return await _dataApi.getData().then((data) {
-      _parseResponse(data);
-      return data;
-    }).catchError((error) => throw error);
+    var topCategories = await _databaseHelper.getTopCategories();
+
+    if (topCategories.isEmpty) {
+      print("initial records empty");
+
+      return await _dataApi.getData().then((data) async {
+        await _parseResponse(data);
+        topCategories = await _databaseHelper.getTopCategories();
+
+        print("after saving count ${topCategories.length}");
+
+        return data;
+      }).catchError((error) => throw error);
+    }
+
+    return topCategories;
   }
 
-  void _parseResponse(dynamic response) {
+  Future<void> _parseResponse(dynamic response) async {
 //    final mainResponse = jsonDecode(response.toString()) as Map;
 
     final categories = response['categories'] as List<dynamic>;
@@ -31,7 +44,7 @@ class Repository {
     var idForCategoryMap = Map<int, Category>();
     var categoryIdForChildCategoriesIdMap = Map<int, dynamic>();
     for (int i = 0; i < categories.length; i++) {
-      _parseCategory(categories[i], idForProductMap, idForCategoryMap,
+      await _parseCategory(categories[i], idForProductMap, idForCategoryMap,
           categoryIdForChildCategoriesIdMap);
     }
     var rankingJson = response['rankings'] as List<dynamic>;
@@ -39,15 +52,17 @@ class Repository {
     _assignChildCategories(idForCategoryMap, categoryIdForChildCategoriesIdMap);
 
     /// save  parsed data in db
-    _saveProductsToDatabase(idForProductMap);
-    _saveCategoriesToDatabase(idForCategoryMap);
+
+    await _saveProductsToDatabase(idForProductMap);
+    await _saveCategoriesToDatabase(idForCategoryMap);
+    return null;
   }
 
-  void _parseCategory(
+  Future<void> _parseCategory(
       dynamic categoryJson,
       Map<int, Product> idForProductMap,
       Map<int, Category> idForCategoryMap,
-      Map<int, dynamic> categoryIdForChildCategoriesIdMap) {
+      Map<int, dynamic> categoryIdForChildCategoriesIdMap) async {
     var childCatList = categoryJson['child_categories'] as List<dynamic>;
     var tempProductList = categoryJson['products'] as List<dynamic>;
 
@@ -59,16 +74,17 @@ class Repository {
       parentId: null,
     );
 
-    _parseProductForCategory(categoryJson, idForProductMap);
+    await _parseProductForCategory(categoryJson, idForProductMap);
 
     idForCategoryMap[category.id] = category;
-    if (childCatList != null && childCatList.isNotEmpty) {
+    if (childCatList != null && childCatList.length > 0) {
       categoryIdForChildCategoriesIdMap[category.id] = childCatList;
     }
+    return null;
   }
 
-  void _parseProductForCategory(
-      dynamic categoryJson, Map<int, Product> idForProductMap) {
+  Future<void> _parseProductForCategory(
+      dynamic categoryJson, Map<int, Product> idForProductMap) async {
     var productList = categoryJson['products'] as List<dynamic>;
     var categoryId = categoryJson['id'];
 
@@ -83,13 +99,17 @@ class Repository {
       );
       var vat = Vat(taxJson['name'], double.parse(taxJson['value'].toString()),
           productJson['id']);
-      _saveVatToDatabase(vat);
+      print("vat db called");
+      await _saveVatToDatabase(vat);
+      print("vat db end");
+
       idForProductMap[product.id] = product;
-      _parseVariantForEachProduct(productJson);
+      await _parseVariantForEachProduct(productJson);
+      return null;
     }
   }
 
-  void _parseVariantForEachProduct(dynamic productJson) {
+  Future<void> _parseVariantForEachProduct(dynamic productJson) async {
     var productId = productJson['id'];
     var variantList = productJson['variants'] as List<dynamic>;
     for (int i = 0; i < variantList.length; i++) {
@@ -103,7 +123,8 @@ class Repository {
           productId);
 
       /// save this data in db
-      _saveVariantToDatabase(variant);
+      await _saveVariantToDatabase(variant);
+      return null;
     }
   }
 
@@ -116,7 +137,7 @@ class Repository {
       for (int i = 0; i < productRankingList.length; i++) {
         var viewJson = productRankingList[i];
         var product = idForProductMap[viewJson['id']];
-        product.viewCount = viewJson['view_count'];
+        product?.viewCount = viewJson['view_count'];
       }
       print(rankingJson);
     }
@@ -128,7 +149,7 @@ class Repository {
       for (int i = 0; i < productRankingList.length; i++) {
         var viewJson = productRankingList[i];
         var product = idForProductMap[viewJson['id']];
-        product.orderCount = viewJson['order_count'];
+        product?.orderCount = viewJson['order_count'];
       }
       print(rankingJson);
     }
@@ -140,7 +161,7 @@ class Repository {
       for (int i = 0; i < productRankingList.length; i++) {
         var viewJson = productRankingList[i];
         var product = idForProductMap[viewJson['id']];
-        product.shareCount = viewJson['shares'];
+        product?.shareCount = viewJson['shares'];
       }
       print(rankingJson);
     }
@@ -151,29 +172,32 @@ class Repository {
     for (int id in categoryIdForChildCategoriesIdMap.keys) {
       var category = idForCategoryMap[id];
       var childIdsList = categoryIdForChildCategoriesIdMap[id] as List<dynamic>;
-      for (int i = 0; i < childIdsList.length; i++) {
-        var childCategory = idForCategoryMap[i];
+      for (int i = 0; i < childIdsList?.length; i++) {
+        var childCategory = idForCategoryMap[childIdsList[i]];
+
         childCategory?.parentId = category?.id;
       }
     }
   }
 
   /// limitations in floor plugin. So need to maintain separate table for vat
-  void _saveVatToDatabase(Vat vat) async {
-    await _databaseHelper.saveVatToDatabase(vat);
+  Future<void> _saveVatToDatabase(Vat vat) async {
+    return _databaseHelper.saveVatToDatabase(vat);
   }
 
-  void _saveVariantToDatabase(Variant variant) async {
-    await _databaseHelper.saveVariantToDatabase(variant);
+  Future<void> _saveVariantToDatabase(Variant variant) async {
+    return _databaseHelper.saveVariantToDatabase(variant);
   }
 
-  void _saveProductsToDatabase(Map<int, Product> idForProductMap) async {
+  Future<void> _saveProductsToDatabase(
+      Map<int, Product> idForProductMap) async {
     for (int id in idForProductMap.keys) {
       await _databaseHelper.saveProductToDatabase(idForProductMap[id]);
     }
   }
 
-  void _saveCategoriesToDatabase(Map<int, Category> idForCategoryMap) async {
+  Future<void> _saveCategoriesToDatabase(
+      Map<int, Category> idForCategoryMap) async {
     for (int id in idForCategoryMap.keys) {
       await _databaseHelper.saveCategoryToDatabase(idForCategoryMap[id]);
     }

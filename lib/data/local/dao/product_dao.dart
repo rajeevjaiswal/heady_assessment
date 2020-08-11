@@ -5,4 +5,7 @@ import 'package:heady/data/local/entity/product.dart';
 abstract class ProductDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertProduct(Product product);
+
+  @Query('SELECT * FROM Product WHERE categoryId = :categoryId')
+  Future<List<Product>> getProductsForCategory(int categoryId);
 }
